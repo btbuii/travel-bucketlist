@@ -11,32 +11,6 @@ export default function PhotoGallery({ images, onAdd, onRemove, onUpdateCaption 
   const [editingCaption, setEditingCaption] = useState(null);
   const [captionDraft, setCaptionDraft] = useState('');
 
-  const touchState = useRef({ startX: 0, startY: 0, scrollLeft: 0, moved: false, swiping: false });
-
-  const handleTouchStart = useCallback((e) => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const t = e.touches[0];
-    touchState.current = { startX: t.clientX, startY: t.clientY, scrollLeft: el.scrollLeft, moved: false, swiping: false };
-  }, []);
-
-  const handleTouchMove = useCallback((e) => {
-    const ts = touchState.current;
-    const el = scrollRef.current;
-    if (!el) return;
-    const t = e.touches[0];
-    const dx = t.clientX - ts.startX;
-    const dy = t.clientY - ts.startY;
-    if (!ts.swiping && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 5) {
-      ts.swiping = true;
-    }
-    if (ts.swiping) {
-      e.preventDefault();
-      if (Math.abs(dx) > 3) ts.moved = true;
-      el.scrollLeft = ts.scrollLeft - dx;
-    }
-  }, []);
-
   const dragState = useRef({ active: false, startX: 0, scrollLeft: 0, moved: false, samples: [], raf: 0 });
 
   const handleMouseDown = useCallback((e) => {
@@ -65,30 +39,24 @@ export default function PhotoGallery({ images, onAdd, onRemove, onUpdateCaption 
     if (!scrollRef.current) return;
     scrollRef.current.style.cursor = 'grab';
     const now = Date.now();
-    const recent = ds.samples.filter(s => now - s.t < 100);
+    const recent = ds.samples.filter(s => now - s.t < 120);
     let velocity = 0;
     if (recent.length >= 2) {
       const first = recent[0];
       const last = recent[recent.length - 1];
       const dt = last.t - first.t;
-      if (dt > 0) velocity = -(last.x - first.x) / dt * 18;
+      if (dt > 0) velocity = -(last.x - first.x) / dt * 28;
     }
     let v = velocity;
     const coast = () => {
-      if (Math.abs(v) < 0.5 || !scrollRef.current) return;
+      if (Math.abs(v) < 0.2 || !scrollRef.current) return;
       scrollRef.current.scrollLeft += v;
-      v *= 0.95;
+      v *= 0.975;
       ds.raf = requestAnimationFrame(coast);
     };
-    if (Math.abs(v) > 0.5) ds.raf = requestAnimationFrame(coast);
+    if (Math.abs(v) > 0.2) ds.raf = requestAnimationFrame(coast);
   }, []);
 
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    el.addEventListener('touchmove', handleTouchMove, { passive: false });
-    return () => el.removeEventListener('touchmove', handleTouchMove);
-  }, [handleTouchMove]);
 
   if (!images?.length && !isAdmin) return null;
 
@@ -153,7 +121,6 @@ export default function PhotoGallery({ images, onAdd, onRemove, onUpdateCaption 
       <div
         className="gallery-track"
         ref={scrollRef}
-        onTouchStart={handleTouchStart}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -164,7 +131,7 @@ export default function PhotoGallery({ images, onAdd, onRemove, onUpdateCaption 
           const url = typeof item === 'string' ? item : item.url;
           const caption = typeof item === 'string' ? '' : (item.caption || '');
           return (
-            <div key={i} className="gallery-item" onClick={(e) => { if (dragState.current.moved || touchState.current.moved) e.stopPropagation(); }}>
+            <div key={i} className="gallery-item" onClick={(e) => { if (dragState.current.moved) e.stopPropagation(); }}>
               <img src={url} alt={caption} loading="lazy" draggable={false} />
               {caption && editingCaption !== i && (
                 <span className="gallery-caption">{caption}</span>
