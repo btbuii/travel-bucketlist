@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { FiChevronDown, FiX, FiArrowRight, FiPlus, FiNavigation, FiStar } from 'react-icons/fi';
 import airports, { haversineDistance } from '../data/airports.js';
+import atmosLogo from '/atmos.png';
 
 const OPERATING_AIRLINES = [
   { id: 'alaska', label: 'Alaska Airlines' },
@@ -187,8 +187,8 @@ function AirportPicker({ value, onChange, label, excludeCodes, required }) {
         }}
       >
         {selected ? (
-          <span className="pp-airport-selected">
-            <strong>{selected.code}</strong> - {selected.name}, {selected.city}
+          <span className="pp-airport-selected pp-airport-selected-code">
+            <strong>{selected.code}</strong>
           </span>
         ) : (
           <span className="pp-airport-placeholder">Select airport...</span>
@@ -383,13 +383,12 @@ export default function PointsPlanner() {
   return (
     <div className="pp-page">
       <nav className="pp-nav">
-        <Link to="/" className="pp-nav-brand">Travel Bucketlist</Link>
         <span className="pp-nav-title">Atmos Rewards Points Planner</span>
       </nav>
 
       <div className="pp-container">
         <div className="pp-hero">
-          <img src="/atmos.png" alt="Atmos Rewards" className="pp-atmos-logo" />
+          <img src={atmosLogo} alt="Atmos Rewards" className="pp-atmos-logo" />
           <h1>Atmos Rewards Points Planner</h1>
           <p>Plan Atmos reward miles and status points with nonstop or multi-stop routes.</p>
         </div>
@@ -398,47 +397,43 @@ export default function PointsPlanner() {
           <div className="pp-card pp-form-card">
             <h2 className="pp-card-title">Route & Fare</h2>
 
-            <div className="pp-airport-row">
-              <AirportPicker
-                label="Origin"
-                required
-                value={origin}
-                onChange={setOrigin}
-                excludeCodes={routeAirports.filter((code, idx) => idx !== 0 && code)}
-              />
-              <div className="pp-mid-col">
+            <div className="pp-airport-row-wrap">
+              <div className="pp-airport-row">
+                <AirportPicker
+                  label="Origin"
+                  required
+                  value={origin}
+                  onChange={setOrigin}
+                  excludeCodes={routeAirports.filter((code, idx) => idx !== 0 && code)}
+                />
                 <div className="pp-arrow-col"><FiArrowRight size={18} /></div>
-                <button type="button" className="pp-add-stop" onClick={addStopover}>
-                  <FiPlus size={14} />
-                  Add Stopover
-                </button>
-              </div>
-              <AirportPicker
-                label="Destination"
-                required
-                value={destination}
-                onChange={setDestination}
-                excludeCodes={routeAirports.filter((code, idx) => idx !== routeAirports.length - 1 && code)}
-              />
-            </div>
-
-            {stopovers.length > 0 && (
-              <div className="pp-stopovers-list">
                 {stopovers.map((code, index) => (
-                  <div key={`stop-${index}`} className="pp-stopover-item">
+                  <div key={`stop-inline-${index}`} className="pp-stopover-inline">
                     <AirportPicker
                       label={`Stopover ${index + 1}`}
                       value={code}
                       onChange={(nextCode) => updateStopover(index, nextCode)}
                       excludeCodes={routeAirports.filter((airportCode, i) => i !== index + 1 && airportCode)}
                     />
-                    <button type="button" className="pp-stop-remove" onClick={() => removeStopover(index)} aria-label={`Remove stopover ${index + 1}`}>
-                      <FiX size={14} />
+                    <button type="button" className="pp-stop-remove pp-stop-remove-inline" onClick={() => removeStopover(index)} aria-label={`Remove stopover ${index + 1}`}>
+                      <FiX size={12} />
                     </button>
+                    <div className="pp-arrow-col"><FiArrowRight size={18} /></div>
                   </div>
                 ))}
+                <AirportPicker
+                  label="Destination"
+                  required
+                  value={destination}
+                  onChange={setDestination}
+                  excludeCodes={routeAirports.filter((code, idx) => idx !== routeAirports.length - 1 && code)}
+                />
               </div>
-            )}
+              <button type="button" className="pp-add-stop" onClick={addStopover}>
+                <FiPlus size={14} />
+                Add Stopover
+              </button>
+            </div>
 
             {oneWayDistance > 0 && (
               <div className="pp-distance">
@@ -461,7 +456,7 @@ export default function PointsPlanner() {
                 <option value="">Select operating carrier...</option>
                 {airlineOptions.map((airline) => (
                   <option key={airline.id} value={airline.id} disabled={!airline.available}>
-                    {airline.label}{!airline.available ? ' (not available for selected route)' : ''}
+                    {airline.label}{!airline.available ? ' - UNAVAILABLE FOR ROUTE' : ''}
                   </option>
                 ))}
               </select>
