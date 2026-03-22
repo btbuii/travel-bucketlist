@@ -56,8 +56,18 @@ export default function PhotoGallery({ images, onAdd, onRemove, onUpdateCaption 
   if (!images?.length && !isAdmin) return null;
 
   const scroll = (dir) => {
-    if (!scrollRef.current) return;
-    scrollRef.current.scrollBy({ left: dir * 260, behavior: 'smooth' });
+    const el = scrollRef.current;
+    if (!el) return;
+    const amount = dir * 260;
+    const atEnd = dir > 0 && el.scrollLeft + el.clientWidth >= el.scrollWidth - 5;
+    const atStart = dir < 0 && el.scrollLeft <= 5;
+    if (atEnd) {
+      el.scrollTo({ left: 0, behavior: 'smooth' });
+    } else if (atStart) {
+      el.scrollTo({ left: el.scrollWidth, behavior: 'smooth' });
+    } else {
+      el.scrollBy({ left: amount, behavior: 'smooth' });
+    }
   };
 
   const handleFile = async (e) => {
@@ -92,6 +102,7 @@ export default function PhotoGallery({ images, onAdd, onRemove, onUpdateCaption 
   return (
     <div className="gallery-section">
       <div className="gallery-controls">
+        <h4 className="gallery-title">Highlights</h4>
         <button className="gallery-arrow" onClick={() => scroll(-1)}><FiChevronLeft size={16} /></button>
         <button className="gallery-arrow" onClick={() => scroll(1)}><FiChevronRight size={16} /></button>
       </div>
@@ -102,7 +113,7 @@ export default function PhotoGallery({ images, onAdd, onRemove, onUpdateCaption 
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-        style={{ cursor: 'grab', touchAction: 'pan-y' }}
+        style={{ cursor: 'grab', touchAction: 'pan-y pinch-zoom' }}
       >
         {(images || []).map((item, i) => {
           const url = typeof item === 'string' ? item : item.url;

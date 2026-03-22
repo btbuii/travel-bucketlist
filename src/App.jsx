@@ -179,6 +179,8 @@ export default function App() {
       sum + Object.values(city.sections).reduce((s, arr) => s + arr.length, 0), 0);
   }, [activeCountry]);
 
+  const countryHeaderRef = useRef(null);
+
   function handleSelectCountry(id) {
     scrollYRef.current = window.scrollY;
     setCountryLoading(true);
@@ -189,7 +191,10 @@ export default function App() {
     setShowTagManager(false);
     setNewTagInput('');
     navigate(`/${username}/country/${id}`);
-    requestAnimationFrame(() => setTimeout(() => setCountryLoading(false), 50));
+    requestAnimationFrame(() => {
+      setTimeout(() => setCountryLoading(false), 50);
+      countryHeaderRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   }
 
   async function handleAddCountry(d) {
@@ -442,7 +447,7 @@ export default function App() {
           {user && (
             <button className="topnav-btn" onClick={signOut}><FiLogOut size={12} /> Sign out</button>
           )}
-          <div className="settings-wrapper" ref={settingsRef}>
+          {user && <div className="settings-wrapper" ref={settingsRef}>
             <button className="topnav-settings-btn" onClick={() => setShowSettings((p) => !p)} aria-label="Settings"><FiSettings size={15} /></button>
             {showSettings && (
               <div className="settings-dropdown">
@@ -514,7 +519,7 @@ export default function App() {
                 )}
               </div>
             )}
-          </div>
+          </div>}
         </div>
       </nav>
 
@@ -628,7 +633,7 @@ export default function App() {
         <div className={`content-area${countryLoading ? ' content-loading' : ''}`}>
           {error && <div className="error-banner"><p>{error}</p></div>}
           <div className="content-panel">
-            <div className="country-header-bar" style={activeCountry.banner ? { backgroundImage: `url(${activeCountry.banner})` } : undefined}>
+            <div ref={countryHeaderRef} className="country-header-bar" style={activeCountry.banner ? { backgroundImage: `url(${activeCountry.banner})` } : undefined}>
               <div className="ch-overlay" />
               <div className="ch-inner">
                 {getFlagUrl(activeCountry.code || activeCountry.id, 48) && (

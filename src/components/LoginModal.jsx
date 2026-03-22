@@ -48,7 +48,6 @@ export default function LoginModal({ onClose }) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your@email.com"
-              autoFocus
               required
             />
           </div>

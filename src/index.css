@@ -1150,9 +1150,18 @@ body {
 
 .gallery-controls {
   display: flex;
+  align-items: center;
   gap: 4px;
-  justify-content: flex-end;
   margin-bottom: 8px;
+}
+.gallery-title {
+  margin: 0;
+  margin-right: auto;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
 .gallery-arrow {
@@ -1328,6 +1337,7 @@ body {
 /* ============================================
    CITY TABS
    ============================================ */
+.city-tabs { position: relative; }
 .city-tabs-scroll {
   display: flex; gap: 0;
   overflow-x: auto;
@@ -1335,6 +1345,18 @@ body {
   border-bottom: 1px solid var(--border);
 }
 .city-tabs-scroll::-webkit-scrollbar { display: none; }
+.city-tabs-fade {
+  display: none;
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 40px;
+  pointer-events: none;
+  background: linear-gradient(to right, transparent, var(--bg, #fff) 90%);
+  z-index: 1;
+}
+@media (max-width: 768px) {
+  .city-tabs-fade { display: block; }
+}
 
 .city-tab {
   display: flex; align-items: center; gap: 5px;
@@ -1933,6 +1955,7 @@ body {
   z-index: 1000;
   padding: 20px;
   animation: fadeIn 0.15s ease;
+  overscroll-behavior: contain;
 }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
@@ -2310,6 +2333,7 @@ body {
   margin-bottom: 14px;
 }
 .login-form { display: flex; flex-direction: column; gap: 14px; }
+.login-form input { font-size: 16px; }
 
 /* ============================================
    LOADING / ERROR
@@ -2558,6 +2582,10 @@ body {
   .form-row-2 { grid-template-columns: 1fr; }
   .form-row-3 { grid-template-columns: 1fr; }
   .modal { padding: 18px; margin: 10px; }
+  .detail-modal { margin: 0; border-radius: 0; max-height: 100vh; width: 100%; max-width: 100%; }
+  .detail-content { padding: 14px; }
+  .detail-image-carousel { border-radius: 0; }
+  .modal-overlay:has(.detail-modal) { padding: 0; }
   .search-filter { flex-direction: column; align-items: stretch; }
   .section-tabs { width: 100%; overflow-x: auto; }
   .section-tab { flex: 1; justify-content: center; font-size: 0.72rem; padding: 6px 8px; }

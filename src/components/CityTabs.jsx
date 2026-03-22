@@ -1,5 +1,5 @@
 import { FiPlus, FiX, FiMenu } from 'react-icons/fi';
-import { useState } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 
 export default function CityTabs({ cities, activeCity, onSelect, onAddCity, onRemoveCity, onReorder, cityLabel = 'City' }) {
@@ -8,6 +8,16 @@ export default function CityTabs({ cities, activeCity, onSelect, onAddCity, onRe
   const [newName, setNewName] = useState('');
   const [dragIdx, setDragIdx] = useState(null);
   const [dragOverIdx, setDragOverIdx] = useState(null);
+  const [showFade, setShowFade] = useState(false);
+  const scrollContainerRef = useRef(null);
+
+  const checkOverflow = useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    setShowFade(el.scrollWidth > el.clientWidth && el.scrollLeft + el.clientWidth < el.scrollWidth - 5);
+  }, []);
+
+  useEffect(() => { checkOverflow(); }, [cities, checkOverflow]);
 
   const handleAdd = async () => {
     if (!newName.trim()) return;
@@ -33,7 +43,8 @@ export default function CityTabs({ cities, activeCity, onSelect, onAddCity, onRe
 
   return (
     <div className="city-tabs">
-      <div className="city-tabs-scroll">
+      {showFade && <div className="city-tabs-fade" />}
+      <div className="city-tabs-scroll" ref={scrollContainerRef} onScroll={checkOverflow}>
         <button
           className={`city-tab ${activeCity === 'all' ? 'active' : ''}`}
           onClick={() => onSelect('all')}
