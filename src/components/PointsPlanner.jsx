@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiChevronDown, FiX, FiArrowRight, FiPlus } from 'react-icons/fi';
+import { FiChevronDown, FiX, FiArrowRight, FiPlus, FiNavigation, FiStar } from 'react-icons/fi';
 import airports, { haversineDistance } from '../data/airports.js';
 
 const OPERATING_AIRLINES = [
@@ -19,6 +19,7 @@ const OPERATING_AIRLINES = [
   { id: 'royal_air_maroc', label: 'Royal Air Maroc' },
   { id: 'royal_jordanian', label: 'Royal Jordanian' },
   { id: 'sri_lankan', label: 'SriLankan Airlines' },
+  { id: 'starlux', label: 'Starlux Airlines' },
 ];
 
 const BOOKED_THROUGH = [
@@ -33,23 +34,23 @@ const TRIP_TYPES = [
 ];
 
 const FARE_CLASSES_ALASKA = [
-  { id: 'J', label: 'J — First', base: 100, bonus: 100, status: 200 },
-  { id: 'C', label: 'C — First', base: 100, bonus: 75, status: 175 },
-  { id: 'D', label: 'D / I — First', base: 100, bonus: 50, status: 150 },
-  { id: 'Y', label: 'Y / B — Economy', base: 100, bonus: 50, status: 150 },
-  { id: 'H', label: 'H / K — Economy', base: 100, bonus: 25, status: 125 },
-  { id: 'M', label: 'M / L / V / S / N / Q / O / G — Economy', base: 100, bonus: 0, status: 100 },
-  { id: 'X', label: 'X — Saver Economy', base: 30, bonus: 0, status: 30 },
+  { id: 'J', label: 'J - First', base: 100, bonus: 100, status: 200 },
+  { id: 'C', label: 'C - First', base: 100, bonus: 75, status: 175 },
+  { id: 'D', label: 'D / I - First', base: 100, bonus: 50, status: 150 },
+  { id: 'Y', label: 'Y / B - Economy', base: 100, bonus: 50, status: 150 },
+  { id: 'H', label: 'H / K - Economy', base: 100, bonus: 25, status: 125 },
+  { id: 'M', label: 'M / L / V / S / N / Q / O / G - Economy', base: 100, bonus: 0, status: 100 },
+  { id: 'X', label: 'X - Saver Economy', base: 30, bonus: 0, status: 30 },
 ];
 
 const FARE_CLASSES_HAWAIIAN = [
-  { id: 'F', label: 'F / J — Domestic First / Intl Business', base: 100, bonus: 100, status: 200 },
-  { id: 'P', label: 'P — Domestic First / Intl Business', base: 100, bonus: 75, status: 175 },
-  { id: 'C', label: 'C / A / D — Domestic First / Intl Business', base: 100, bonus: 50, status: 150 },
-  { id: 'Y', label: 'Y / W / X — Economy', base: 100, bonus: 50, status: 150 },
-  { id: 'Q', label: 'Q / V / B / S — Economy', base: 100, bonus: 25, status: 125 },
-  { id: 'N', label: 'N / M / I / H / G / K / L / Z / O — Economy', base: 100, bonus: 0, status: 100 },
-  { id: 'U', label: 'U — Saver Economy', base: 30, bonus: 0, status: 30 },
+  { id: 'F', label: 'F / J - Domestic First / Intl Business', base: 100, bonus: 100, status: 200 },
+  { id: 'P', label: 'P - Domestic First / Intl Business', base: 100, bonus: 75, status: 175 },
+  { id: 'C', label: 'C / A / D - Domestic First / Intl Business', base: 100, bonus: 50, status: 150 },
+  { id: 'Y', label: 'Y / W / X - Economy', base: 100, bonus: 50, status: 150 },
+  { id: 'Q', label: 'Q / V / B / S - Economy', base: 100, bonus: 25, status: 125 },
+  { id: 'N', label: 'N / M / I / H / G / K / L / Z / O - Economy', base: 100, bonus: 0, status: 100 },
+  { id: 'U', label: 'U - Saver Economy', base: 30, bonus: 0, status: 30 },
 ];
 
 const CABIN_PARTNER_ALASKA = [
@@ -77,6 +78,25 @@ const STATUS_TIERS = [
   { id: 'titanium', label: 'Atmos Titanium', bonus: 150 },
 ];
 
+const AIRLINE_NETWORKS = {
+  alaska: new Set(['SEA', 'ANC', 'PDX', 'SFO', 'LAX', 'SAN', 'SJC', 'OAK', 'SMF', 'ONT', 'SNA', 'BUR', 'PSP', 'FAI', 'JNU', 'KTN', 'SIT', 'BET', 'ADQ', 'HNL', 'OGG', 'KOA', 'LIH', 'JFK', 'EWR', 'BOS', 'DCA', 'IAD', 'PHL', 'ORD', 'ATL', 'DFW', 'IAH', 'AUS', 'DEN', 'PHX', 'LAS', 'MSP', 'DTW', 'MCO', 'MIA', 'FLL', 'TPA', 'BNA', 'SJD', 'PVR', 'CUN', 'MEX', 'YVR', 'YYC', 'NRT', 'HND', 'ICN', 'LHR', 'CDG', 'FRA', 'SIN', 'HKG', 'SYD', 'AKL', 'DOH', 'BKK']),
+  hawaiian: new Set(['HNL', 'OGG', 'KOA', 'LIH', 'ITO', 'SEA', 'PDX', 'SFO', 'LAX', 'SAN', 'SJC', 'OAK', 'SMF', 'LAS', 'PHX', 'JFK', 'BOS', 'ICN', 'NRT', 'HND']),
+  american: new Set(['JFK', 'LGA', 'EWR', 'BOS', 'PHL', 'CLT', 'DCA', 'IAD', 'MIA', 'ORD', 'DFW', 'AUS', 'LAX', 'SFO', 'SEA', 'SAN', 'PHX', 'LAS', 'DEN', 'LHR', 'CDG', 'FRA', 'BCN', 'FCO', 'DOH', 'NRT', 'HND', 'ICN', 'HKG']),
+  british: new Set(['LHR', 'JFK', 'BOS', 'IAD', 'ORD', 'DFW', 'LAX', 'SFO', 'SEA', 'SAN', 'PHX', 'LAS', 'MIA', 'DOH', 'HKG', 'SIN', 'NRT']),
+  cathay: new Set(['HKG', 'LAX', 'SFO', 'SEA', 'JFK', 'YVR', 'LHR', 'CDG', 'FRA', 'NRT', 'HND', 'ICN', 'SIN', 'BKK', 'MNL', 'TPE']),
+  finnair: new Set(['LHR', 'JFK', 'LAX', 'SFO', 'ORD', 'DFW', 'NRT', 'HND', 'ICN', 'BKK', 'SIN']),
+  iberia: new Set(['LHR', 'JFK', 'BOS', 'MIA', 'ORD', 'LAX', 'SFO', 'BCN', 'FCO', 'DOH']),
+  japan: new Set(['NRT', 'HND', 'LAX', 'SFO', 'SEA', 'SAN', 'YVR', 'JFK', 'BOS', 'DFW', 'LHR', 'HKG', 'BKK', 'SIN', 'TPE']),
+  malaysia: new Set(['LHR', 'NRT', 'HND', 'ICN', 'HKG', 'SIN', 'BKK', 'TPE', 'DOH']),
+  oman: new Set(['DOH', 'LHR', 'BKK']),
+  qantas: new Set(['SYD', 'AKL', 'LAX', 'SFO', 'DFW', 'NRT', 'HND', 'SIN', 'BKK', 'HKG', 'LHR']),
+  qatar: new Set(['DOH', 'LAX', 'SFO', 'SEA', 'JFK', 'BOS', 'IAD', 'ORD', 'DFW', 'MIA', 'LHR', 'CDG', 'FRA', 'BCN', 'FCO', 'IST', 'HKG', 'BKK', 'SIN', 'MNL', 'TPE', 'DEL', 'BOM']),
+  royal_air_maroc: new Set(['JFK', 'IAD', 'MIA', 'LHR', 'CDG', 'BCN']),
+  royal_jordanian: new Set(['JFK', 'ORD', 'LHR', 'CDG', 'FCO', 'IST', 'DOH']),
+  sri_lankan: new Set(['DOH', 'SIN', 'BKK', 'HKG', 'DEL', 'BOM', 'LHR']),
+  starlux: new Set(['TPE', 'LAX', 'SFO', 'SEA', 'ONT', 'SAN', 'BKK', 'MNL']),
+};
+
 function getFareOptions(earningModel) {
   switch (earningModel) {
     case 'alaska': return FARE_CLASSES_ALASKA;
@@ -85,6 +105,16 @@ function getFareOptions(earningModel) {
     case 'partner_site': return CABIN_PARTNER_SITE;
     default: return [];
   }
+}
+
+function sortFareOptionsAscending(fareOptions) {
+  return [...fareOptions].sort((a, b) => {
+    const totalA = a.base + a.bonus;
+    const totalB = b.base + b.bonus;
+    if (totalA !== totalB) return totalA - totalB;
+    if (a.status !== b.status) return a.status - b.status;
+    return a.label.localeCompare(b.label);
+  });
 }
 
 function getEarningModel(operatingAirline, bookedThrough) {
@@ -110,14 +140,23 @@ function getEarningModelLabel(earningModel) {
   }
 }
 
-function AirportPicker({ value, onChange, label, excludeCodes }) {
+function isAirlineAvailableForRoute(airlineId, origin, destination) {
+  if (!origin || !destination) return true;
+  const network = AIRLINE_NETWORKS[airlineId];
+  if (!network) return true;
+  return network.has(origin) && network.has(destination);
+}
+
+function AirportPicker({ value, onChange, label, excludeCodes, required }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const ref = useRef(null);
   const inputRef = useRef(null);
 
   useEffect(() => {
-    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
@@ -134,7 +173,10 @@ function AirportPicker({ value, onChange, label, excludeCodes }) {
 
   return (
     <div className="pp-airport-picker" ref={ref}>
-      <label className="pp-label">{label}</label>
+      <label className="pp-label">
+        {label}
+        {required ? <span className="pp-required">*</span> : null}
+      </label>
       <button
         type="button"
         className="pp-airport-btn"
@@ -191,25 +233,48 @@ function AirportPicker({ value, onChange, label, excludeCodes }) {
 
 export default function PointsPlanner() {
   const [routeAirports, setRouteAirports] = useState(['', '']);
-  const [tripType, setTripType] = useState('one_way');
-  const [operatingAirline, setOperatingAirline] = useState('alaska');
-  const [bookedThrough, setBookedThrough] = useState('alaska_portal');
+  const [tripType, setTripType] = useState('');
+  const [operatingAirline, setOperatingAirline] = useState('');
+  const [bookedThrough, setBookedThrough] = useState('');
   const [fareClass, setFareClass] = useState('');
   const [status, setStatus] = useState('none');
   const [hasAtmosCard, setHasAtmosCard] = useState(false);
   const [hasBofA, setHasBofA] = useState(false);
   const [ticketPrice, setTicketPrice] = useState('');
 
-  const earningModel = useMemo(() => getEarningModel(operatingAirline, bookedThrough), [operatingAirline, bookedThrough]);
-  const fareOptions = getFareOptions(earningModel);
+  const origin = routeAirports[0] || '';
+  const destination = routeAirports[routeAirports.length - 1] || '';
+  const stopovers = routeAirports.slice(1, -1);
+  const hasRouteEndpoints = Boolean(origin && destination);
+
+  const airlineOptions = useMemo(
+    () => OPERATING_AIRLINES.map((airline) => ({
+      ...airline,
+      available: !hasRouteEndpoints || isAirlineAvailableForRoute(airline.id, origin, destination),
+    })),
+    [hasRouteEndpoints, origin, destination]
+  );
+
+  const earningModel = useMemo(() => {
+    if (!operatingAirline || !bookedThrough) return '';
+    return getEarningModel(operatingAirline, bookedThrough);
+  }, [operatingAirline, bookedThrough]);
+
+  const fareOptions = useMemo(() => sortFareOptionsAscending(getFareOptions(earningModel)), [earningModel]);
   const tripMultiplier = TRIP_TYPES.find((t) => t.id === tripType)?.multiplier || 1;
   const missingRouteAirport = routeAirports.some((code) => !code);
 
   useEffect(() => {
-    if (fareOptions.length > 0 && !fareOptions.find((f) => f.id === fareClass)) {
-      setFareClass(fareOptions[0].id);
+    if (fareClass && !fareOptions.some((f) => f.id === fareClass)) {
+      setFareClass('');
     }
   }, [fareOptions, fareClass]);
+
+  useEffect(() => {
+    if (operatingAirline && hasRouteEndpoints && !isAirlineAvailableForRoute(operatingAirline, origin, destination)) {
+      setOperatingAirline('');
+    }
+  }, [operatingAirline, hasRouteEndpoints, origin, destination]);
 
   const segmentMiles = useMemo(() => {
     if (missingRouteAirport) return [];
@@ -221,7 +286,6 @@ export default function PointsPlanner() {
       const toAirport = airports.find((a) => a.code === toCode);
       if (!fromAirport || !toAirport) return [];
       segments.push({
-        key: `${fromCode}-${toCode}-${i}`,
         fromCode,
         toCode,
         miles: Math.round(haversineDistance(fromAirport.lat, fromAirport.lon, toAirport.lat, toAirport.lon)),
@@ -232,9 +296,10 @@ export default function PointsPlanner() {
 
   const oneWayDistance = useMemo(() => segmentMiles.reduce((sum, segment) => sum + segment.miles, 0), [segmentMiles]);
   const totalFlownDistance = oneWayDistance * tripMultiplier;
+  const requiredComplete = Boolean(origin && destination && tripType && operatingAirline && bookedThrough && fareClass);
 
   const results = useMemo(() => {
-    if (missingRouteAirport || !fareClass || totalFlownDistance === 0) return null;
+    if (!requiredComplete || totalFlownDistance === 0) return null;
     const fare = fareOptions.find((f) => f.id === fareClass);
     if (!fare) return null;
 
@@ -264,7 +329,6 @@ export default function PointsPlanner() {
       tripMultiplier,
       tripTypeLabel: TRIP_TYPES.find((t) => t.id === tripType)?.label || 'One-way',
       earningModelLabel: getEarningModelLabel(earningModel),
-      fareLabel: fare.label,
       basePct: fare.base,
       cabinBonusPct: fare.bonus,
       statusPct: fare.status,
@@ -282,10 +346,26 @@ export default function PointsPlanner() {
       totalMiles: flightMiles + cardMiles + bofABonusMiles,
       totalStatusPts: statusPoints + cardStatusPts,
     };
-  }, [missingRouteAirport, fareClass, totalFlownDistance, fareOptions, status, hasAtmosCard, ticketPrice, bookedThrough, hasBofA, routeAirports, oneWayDistance, tripMultiplier, tripType, earningModel]);
+  }, [requiredComplete, totalFlownDistance, fareOptions, fareClass, status, hasAtmosCard, ticketPrice, bookedThrough, hasBofA, routeAirports, tripMultiplier, tripType, earningModel]);
 
-  function updateRouteAirport(index, code) {
-    setRouteAirports((prev) => prev.map((item, i) => (i === index ? code : item)));
+  function setOrigin(code) {
+    setRouteAirports((prev) => {
+      const next = [...prev];
+      next[0] = code;
+      return next;
+    });
+  }
+
+  function setDestination(code) {
+    setRouteAirports((prev) => {
+      const next = [...prev];
+      next[next.length - 1] = code;
+      return next;
+    });
+  }
+
+  function updateStopover(index, code) {
+    setRouteAirports((prev) => prev.map((item, i) => (i === index + 1 ? code : item)));
   }
 
   function addStopover() {
@@ -297,8 +377,7 @@ export default function PointsPlanner() {
   }
 
   function removeStopover(index) {
-    if (index <= 0 || index >= routeAirports.length - 1) return;
-    setRouteAirports((prev) => prev.filter((_, i) => i !== index));
+    setRouteAirports((prev) => prev.filter((_, i) => i !== index + 1));
   }
 
   return (
@@ -310,48 +389,56 @@ export default function PointsPlanner() {
 
       <div className="pp-container">
         <div className="pp-hero">
-          <div className="pp-hero-brand">
-            <span className="pp-logo-badge">AS</span>
-            <span className="pp-hero-brand-text">Alaska Airlines</span>
-          </div>
+          <img src="/atmos.png" alt="Atmos Rewards" className="pp-atmos-logo" />
           <h1>Atmos Rewards Points Planner</h1>
-          <p>Calculate Atmos reward miles and status points for nonstop or multi-stop routes.</p>
+          <p>Plan Atmos reward miles and status points with nonstop or multi-stop routes.</p>
         </div>
 
         <div className="pp-grid">
           <div className="pp-card pp-form-card">
             <h2 className="pp-card-title">Route & Fare</h2>
 
-            <div className="pp-route-stack">
-              {routeAirports.map((code, index) => {
-                const isOrigin = index === 0;
-                const isDestination = index === routeAirports.length - 1;
-                const label = isOrigin ? 'Origin' : (isDestination ? 'Destination' : `Stopover ${index}`);
-                return (
-                  <div key={`route-${index}`} className="pp-route-stop">
-                    <div className="pp-route-stop-row">
-                      <AirportPicker
-                        label={label}
-                        value={code}
-                        onChange={(nextCode) => updateRouteAirport(index, nextCode)}
-                        excludeCodes={routeAirports.filter((airportCode, i) => i !== index && airportCode)}
-                      />
-                      {!isOrigin && !isDestination && (
-                        <button type="button" className="pp-stop-remove" onClick={() => removeStopover(index)} aria-label={`Remove stopover ${index}`}>
-                          <FiX size={14} />
-                        </button>
-                      )}
-                    </div>
-                    {!isDestination && <div className="pp-arrow-col pp-arrow-inline"><FiArrowRight size={16} /></div>}
-                  </div>
-                );
-              })}
-
-              <button type="button" className="pp-add-stop" onClick={addStopover}>
-                <FiPlus size={14} />
-                Add layover / stop airport
-              </button>
+            <div className="pp-airport-row">
+              <AirportPicker
+                label="Origin"
+                required
+                value={origin}
+                onChange={setOrigin}
+                excludeCodes={routeAirports.filter((code, idx) => idx !== 0 && code)}
+              />
+              <div className="pp-mid-col">
+                <div className="pp-arrow-col"><FiArrowRight size={18} /></div>
+                <button type="button" className="pp-add-stop" onClick={addStopover}>
+                  <FiPlus size={14} />
+                  Add Stopover
+                </button>
+              </div>
+              <AirportPicker
+                label="Destination"
+                required
+                value={destination}
+                onChange={setDestination}
+                excludeCodes={routeAirports.filter((code, idx) => idx !== routeAirports.length - 1 && code)}
+              />
             </div>
+
+            {stopovers.length > 0 && (
+              <div className="pp-stopovers-list">
+                {stopovers.map((code, index) => (
+                  <div key={`stop-${index}`} className="pp-stopover-item">
+                    <AirportPicker
+                      label={`Stopover ${index + 1}`}
+                      value={code}
+                      onChange={(nextCode) => updateStopover(index, nextCode)}
+                      excludeCodes={routeAirports.filter((airportCode, i) => i !== index + 1 && airportCode)}
+                    />
+                    <button type="button" className="pp-stop-remove" onClick={() => removeStopover(index)} aria-label={`Remove stopover ${index + 1}`}>
+                      <FiX size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {oneWayDistance > 0 && (
               <div className="pp-distance">
@@ -361,30 +448,41 @@ export default function PointsPlanner() {
             )}
 
             <div className="pp-field">
-              <label className="pp-label">Trip type</label>
+              <label className="pp-label">Trip type<span className="pp-required">*</span></label>
               <select className="pp-select" value={tripType} onChange={(e) => setTripType(e.target.value)}>
+                <option value="">Select trip type...</option>
                 {TRIP_TYPES.map((type) => <option key={type.id} value={type.id}>{type.label}</option>)}
               </select>
             </div>
 
             <div className="pp-field">
-              <label className="pp-label">Airline (operating carrier)</label>
+              <label className="pp-label">Airline (operating carrier)<span className="pp-required">*</span></label>
               <select className="pp-select" value={operatingAirline} onChange={(e) => setOperatingAirline(e.target.value)}>
-                {OPERATING_AIRLINES.map((airline) => <option key={airline.id} value={airline.id}>{airline.label}</option>)}
+                <option value="">Select operating carrier...</option>
+                {airlineOptions.map((airline) => (
+                  <option key={airline.id} value={airline.id} disabled={!airline.available}>
+                    {airline.label}{!airline.available ? ' (not available for selected route)' : ''}
+                  </option>
+                ))}
               </select>
+              {hasRouteEndpoints && (
+                <span className="pp-hint">Airlines unavailable for the selected origin/destination are disabled.</span>
+              )}
             </div>
 
             <div className="pp-field">
-              <label className="pp-label">Airline booked through</label>
+              <label className="pp-label">Airline booked through<span className="pp-required">*</span></label>
               <select className="pp-select" value={bookedThrough} onChange={(e) => setBookedThrough(e.target.value)}>
+                <option value="">Select booking portal...</option>
                 {BOOKED_THROUGH.map((source) => <option key={source.id} value={source.id}>{source.label}</option>)}
               </select>
-              <span className="pp-hint">{getEarningModelLabel(earningModel)}</span>
+              <span className="pp-hint">{earningModel ? getEarningModelLabel(earningModel) : 'Select airline + booking portal to determine earning table.'}</span>
             </div>
 
             <div className="pp-field">
-              <label className="pp-label">Fare class / cabin</label>
-              <select className="pp-select" value={fareClass} onChange={(e) => setFareClass(e.target.value)}>
+              <label className="pp-label">Fare class / cabin<span className="pp-required">*</span></label>
+              <select className="pp-select" value={fareClass} onChange={(e) => setFareClass(e.target.value)} disabled={!earningModel}>
+                <option value="">Select fare class...</option>
                 {fareOptions.map((fare) => <option key={fare.id} value={fare.id}>{fare.label}</option>)}
               </select>
             </div>
@@ -424,10 +522,12 @@ export default function PointsPlanner() {
               <>
                 <div className="pp-result-hero">
                   <div className="pp-result-big">
+                    <span className="pp-result-icon"><FiNavigation size={16} /></span>
                     <span className="pp-result-num">{results.totalMiles.toLocaleString()}</span>
                     <span className="pp-result-label">Atmos Reward Miles</span>
                   </div>
                   <div className="pp-result-big pp-result-status">
+                    <span className="pp-result-icon"><FiStar size={16} /></span>
                     <span className="pp-result-num">{results.totalStatusPts.toLocaleString()}</span>
                     <span className="pp-result-label">Status Points</span>
                   </div>
@@ -459,7 +559,7 @@ export default function PointsPlanner() {
               </>
             ) : (
               <div className="pp-empty">
-                <p>Select all route airports and a fare class to see your estimated Atmos rewards earnings.</p>
+                <p>Complete all required fields (marked *) to calculate Atmos rewards earnings.</p>
               </div>
             )}
           </div>
