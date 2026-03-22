@@ -60,9 +60,11 @@ export default function PhotoGallery({ images, onAdd, onRemove, onUpdateCaption 
 
   if (!images?.length && !isAdmin) return null;
 
+  const scrollAnim = useRef(null);
   const scroll = (dir) => {
     const el = scrollRef.current;
     if (!el) return;
+    if (scrollAnim.current) cancelAnimationFrame(scrollAnim.current);
     const item = el.querySelector('.gallery-item');
     const itemWidth = item ? item.offsetWidth + 10 : 190;
     const maxScroll = el.scrollWidth - el.clientWidth;
@@ -77,9 +79,17 @@ export default function PhotoGallery({ images, onAdd, onRemove, onUpdateCaption 
     } else {
       target = Math.max(0, Math.min(el.scrollLeft + dir * itemWidth, maxScroll));
     }
-    el.style.scrollBehavior = 'smooth';
-    el.scrollLeft = target;
-    el.style.scrollBehavior = '';
+    const start = el.scrollLeft;
+    const dist = target - start;
+    const duration = Math.min(400, Math.abs(dist) * 1.5);
+    const t0 = performance.now();
+    const ease = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    const step = (now) => {
+      const p = Math.min((now - t0) / duration, 1);
+      el.scrollLeft = start + dist * ease(p);
+      if (p < 1) scrollAnim.current = requestAnimationFrame(step);
+    };
+    scrollAnim.current = requestAnimationFrame(step);
   };
 
   const handleFile = async (e) => {
