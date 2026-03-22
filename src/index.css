@@ -868,6 +868,7 @@ body {
   background-color: #1a2332;
   overflow: hidden;
   min-height: 110px;
+  scroll-margin-top: 52px;
 }
 
 .ch-overlay {
@@ -1158,7 +1159,7 @@ body {
   margin: 0;
   margin-right: auto;
   font-family: var(--font-heading);
-  font-size: 0.85rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.01em;
@@ -1346,16 +1347,12 @@ body {
 }
 .city-tabs-scroll::-webkit-scrollbar { display: none; }
 .city-tabs-fade {
-  display: none;
   position: absolute;
   top: 0; right: 0; bottom: 0;
-  width: 40px;
+  width: 48px;
   pointer-events: none;
-  background: linear-gradient(to right, transparent, var(--bg, #fff) 90%);
+  background: linear-gradient(to right, rgba(255,255,255,0), #ffffff 80%);
   z-index: 1;
-}
-@media (max-width: 768px) {
-  .city-tabs-fade { display: block; }
 }
 
 .city-tab {
@@ -2582,10 +2579,7 @@ body {
   .form-row-2 { grid-template-columns: 1fr; }
   .form-row-3 { grid-template-columns: 1fr; }
   .modal { padding: 18px; margin: 10px; }
-  .detail-modal { margin: 0; border-radius: 0; max-height: 100vh; width: 100%; max-width: 100%; }
-  .detail-content { padding: 14px; }
-  .detail-image-carousel { border-radius: 0; }
-  .modal-overlay:has(.detail-modal) { padding: 0; }
+  .detail-content { padding: 16px; }
   .search-filter { flex-direction: column; align-items: stretch; }
   .section-tabs { width: 100%; overflow-x: auto; }
   .section-tab { flex: 1; justify-content: center; font-size: 0.72rem; padding: 6px 8px; }

@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { FiPlus, FiX, FiChevronLeft, FiChevronRight, FiEdit2, FiCheck } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 
@@ -11,19 +11,44 @@ export default function PhotoGallery({ images, onAdd, onRemove, onUpdateCaption 
   const [editingCaption, setEditingCaption] = useState(null);
   const [captionDraft, setCaptionDraft] = useState('');
 
+  const touchState = useRef({ startX: 0, startY: 0, scrollLeft: 0, moved: false, swiping: false });
+
+  const handleTouchStart = useCallback((e) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const t = e.touches[0];
+    touchState.current = { startX: t.clientX, startY: t.clientY, scrollLeft: el.scrollLeft, moved: false, swiping: false };
+  }, []);
+
+  const handleTouchMove = useCallback((e) => {
+    const ts = touchState.current;
+    const el = scrollRef.current;
+    if (!el) return;
+    const t = e.touches[0];
+    const dx = t.clientX - ts.startX;
+    const dy = t.clientY - ts.startY;
+    if (!ts.swiping && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 5) {
+      ts.swiping = true;
+    }
+    if (ts.swiping) {
+      e.preventDefault();
+      if (Math.abs(dx) > 3) ts.moved = true;
+      el.scrollLeft = ts.scrollLeft - dx;
+    }
+  }, []);
+
   const dragState = useRef({ active: false, startX: 0, scrollLeft: 0, moved: false, prevX: 0, velocity: 0, ts: 0, raf: 0 });
 
-  const handlePointerDown = useCallback((e) => {
+  const handleMouseDown = useCallback((e) => {
     if (!scrollRef.current) return;
     const tag = e.target.tagName.toLowerCase();
     if (tag === 'button' || tag === 'input' || e.target.closest('button') || e.target.closest('input') || e.target.closest('.gallery-caption-editor')) return;
     cancelAnimationFrame(dragState.current.raf);
     dragState.current = { active: true, startX: e.clientX, scrollLeft: scrollRef.current.scrollLeft, moved: false, prevX: e.clientX, velocity: 0, ts: Date.now(), raf: 0 };
-    scrollRef.current.setPointerCapture(e.pointerId);
     scrollRef.current.style.cursor = 'grabbing';
   }, []);
 
-  const handlePointerMove = useCallback((e) => {
+  const handleMouseMove = useCallback((e) => {
     const ds = dragState.current;
     if (!ds.active || !scrollRef.current) return;
     e.preventDefault();
@@ -37,11 +62,10 @@ export default function PhotoGallery({ images, onAdd, onRemove, onUpdateCaption 
     scrollRef.current.scrollLeft = ds.scrollLeft - dx;
   }, []);
 
-  const handlePointerUp = useCallback((e) => {
+  const handleMouseUp = useCallback(() => {
     const ds = dragState.current;
     ds.active = false;
     if (!scrollRef.current) return;
-    scrollRef.current.releasePointerCapture(e.pointerId);
     scrollRef.current.style.cursor = 'grab';
     let v = -ds.velocity * 16;
     const coast = () => {
@@ -53,12 +77,20 @@ export default function PhotoGallery({ images, onAdd, onRemove, onUpdateCaption 
     ds.raf = requestAnimationFrame(coast);
   }, []);
 
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.addEventListener('touchmove', handleTouchMove, { passive: false });
+    return () => el.removeEventListener('touchmove', handleTouchMove);
+  }, [handleTouchMove]);
+
   if (!images?.length && !isAdmin) return null;
 
   const scroll = (dir) => {
     const el = scrollRef.current;
     if (!el) return;
-    const amount = dir * 260;
+    const item = el.querySelector('.gallery-item');
+    const itemWidth = item ? item.offsetWidth + 10 : 190;
     const atEnd = dir > 0 && el.scrollLeft + el.clientWidth >= el.scrollWidth - 5;
     const atStart = dir < 0 && el.scrollLeft <= 5;
     if (atEnd) {
@@ -66,7 +98,7 @@ export default function PhotoGallery({ images, onAdd, onRemove, onUpdateCaption 
     } else if (atStart) {
       el.scrollTo({ left: el.scrollWidth, behavior: 'smooth' });
     } else {
-      el.scrollBy({ left: amount, behavior: 'smooth' });
+      el.scrollBy({ left: dir * itemWidth, behavior: 'smooth' });
     }
   };
 
@@ -109,17 +141,18 @@ export default function PhotoGallery({ images, onAdd, onRemove, onUpdateCaption 
       <div
         className="gallery-track"
         ref={scrollRef}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-        style={{ cursor: 'grab', touchAction: 'pan-y pinch-zoom' }}
+        onTouchStart={handleTouchStart}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        style={{ cursor: 'grab' }}
       >
         {(images || []).map((item, i) => {
           const url = typeof item === 'string' ? item : item.url;
           const caption = typeof item === 'string' ? '' : (item.caption || '');
           return (
-            <div key={i} className="gallery-item" onClick={(e) => { if (dragState.current.moved) e.stopPropagation(); }}>
+            <div key={i} className="gallery-item" onClick={(e) => { if (dragState.current.moved || touchState.current.moved) e.stopPropagation(); }}>
               <img src={url} alt={caption} loading="lazy" draggable={false} />
               {caption && editingCaption !== i && (
                 <span className="gallery-caption">{caption}</span>
