@@ -81,6 +81,18 @@ export default function App() {
   const settingsRef = useRef(null);
   const [showTagManager, setShowTagManager] = useState(false);
   const [newTagInput, setNewTagInput] = useState('');
+  const [mobileTaglineVisible, setMobileTaglineVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const y = window.scrollY;
+      setMobileTaglineVisible(y < lastScrollY.current || y < 10);
+      lastScrollY.current = y;
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     if (!profile) return;
@@ -432,15 +444,16 @@ export default function App() {
               <button className="topnav-tagline-cancel" onClick={() => setEditingTagline(false)}><FiX size={11} /></button>
             </div>
           ) : (
-            <span className="topnav-tagline">
-              {profile.display_name || username}'s Portfolio{tagline ? ': ' + tagline : ''}
+            <>
+              <Link to={`/${username}`} className="topnav-tagline">
+                {profile.display_name || username}'s Portfolio{tagline ? ': ' + tagline : ''}
+              </Link>
               {isAdmin && <button className="topnav-tagline-edit-btn" onClick={() => { setTaglineDraft(tagline); setEditingTagline(true); }}><FiEdit2 size={10} /></button>}
-            </span>
+            </>
           )}
         </div>
         <div className="topnav-right">
-          <Link to={`/${username}`} className={`topnav-link ${isHomePage ? 'active' : ''}`}>Home</Link>
-          <a href="#" className="topnav-link">About</a>
+          <Link to="/" className="topnav-link">Home</Link>
           {!user && (
             <button className="topnav-btn" onClick={() => setShowLogin(true)}><FiLogIn size={12} /> Sign in</button>
           )}
@@ -523,8 +536,10 @@ export default function App() {
         </div>
       </nav>
 
-      <div className="mobile-tagline-bar">
-        <span>{profile.display_name || username}'s Portfolio{tagline ? ': ' + tagline : ''}</span>
+      <div className={`mobile-tagline-bar${mobileTaglineVisible ? '' : ' mobile-tagline-hidden'}`}>
+        <Link to={`/${username}`} className="mobile-tagline-link">
+          {profile.display_name || username}'s Portfolio{tagline ? ': ' + tagline : ''}
+        </Link>
       </div>
 
       <CountryBanners

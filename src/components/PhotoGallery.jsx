@@ -91,14 +91,16 @@ export default function PhotoGallery({ images, onAdd, onRemove, onUpdateCaption 
     if (!el) return;
     const item = el.querySelector('.gallery-item');
     const itemWidth = item ? item.offsetWidth + 10 : 190;
-    const atEnd = dir > 0 && el.scrollLeft + el.clientWidth >= el.scrollWidth - 5;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    const atEnd = dir > 0 && el.scrollLeft >= maxScroll - 5;
     const atStart = dir < 0 && el.scrollLeft <= 5;
     if (atEnd) {
       el.scrollTo({ left: 0, behavior: 'smooth' });
     } else if (atStart) {
-      el.scrollTo({ left: el.scrollWidth, behavior: 'smooth' });
+      el.scrollTo({ left: maxScroll, behavior: 'smooth' });
     } else {
-      el.scrollBy({ left: dir * itemWidth, behavior: 'smooth' });
+      const target = el.scrollLeft + dir * itemWidth;
+      el.scrollTo({ left: Math.min(target, maxScroll), behavior: 'smooth' });
     }
   };
 
