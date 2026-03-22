@@ -92,16 +92,20 @@ export default function PhotoGallery({ images, onAdd, onRemove, onUpdateCaption 
     const item = el.querySelector('.gallery-item');
     const itemWidth = item ? item.offsetWidth + 10 : 190;
     const maxScroll = el.scrollWidth - el.clientWidth;
-    const atEnd = dir > 0 && el.scrollLeft >= maxScroll - 5;
-    const atStart = dir < 0 && el.scrollLeft <= 5;
-    if (atEnd) {
-      el.scrollTo({ left: 0, behavior: 'smooth' });
-    } else if (atStart) {
-      el.scrollTo({ left: maxScroll, behavior: 'smooth' });
+    if (maxScroll <= 0) return;
+    const atEnd = el.scrollLeft >= maxScroll - 5;
+    const atStart = el.scrollLeft <= 5;
+    let target;
+    if (dir > 0 && atEnd) {
+      target = 0;
+    } else if (dir < 0 && atStart) {
+      target = maxScroll;
     } else {
-      const target = el.scrollLeft + dir * itemWidth;
-      el.scrollTo({ left: Math.min(target, maxScroll), behavior: 'smooth' });
+      target = Math.max(0, Math.min(el.scrollLeft + dir * itemWidth, maxScroll));
     }
+    el.style.scrollBehavior = 'smooth';
+    el.scrollLeft = target;
+    el.style.scrollBehavior = '';
   };
 
   const handleFile = async (e) => {
