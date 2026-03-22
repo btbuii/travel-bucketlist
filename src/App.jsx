@@ -193,6 +193,8 @@ export default function App() {
 
   const countryHeaderRef = useRef(null);
 
+  const pendingScrollRef = useRef(false);
+
   function handleSelectCountry(id) {
     scrollYRef.current = window.scrollY;
     setCountryLoading(true);
@@ -202,12 +204,18 @@ export default function App() {
     setStatusFilter('all');
     setShowTagManager(false);
     setNewTagInput('');
+    pendingScrollRef.current = true;
     navigate(`/${username}/country/${id}`);
+    requestAnimationFrame(() => setTimeout(() => setCountryLoading(false), 50));
+  }
+
+  useEffect(() => {
+    if (!pendingScrollRef.current || !routeCountryId || !activeCountry) return;
+    pendingScrollRef.current = false;
     requestAnimationFrame(() => {
-      setTimeout(() => setCountryLoading(false), 50);
       countryHeaderRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
-  }
+  }, [routeCountryId, activeCountry]);
 
   async function handleAddCountry(d) {
     const id = await addCountry(d);
@@ -445,7 +453,7 @@ export default function App() {
             </div>
           ) : (
             <>
-              <Link to={`/${username}`} className="topnav-tagline">
+              <Link to={`/${username}`} className="topnav-tagline" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
                 {profile.display_name || username}'s Portfolio{tagline ? ': ' + tagline : ''}
               </Link>
               {isAdmin && <button className="topnav-tagline-edit-btn" onClick={() => { setTaglineDraft(tagline); setEditingTagline(true); }}><FiEdit2 size={10} /></button>}
@@ -537,7 +545,7 @@ export default function App() {
       </nav>
 
       <div className={`mobile-tagline-bar${mobileTaglineVisible ? '' : ' mobile-tagline-hidden'}`}>
-        <Link to={`/${username}`} className="mobile-tagline-link">
+        <Link to={`/${username}`} className="mobile-tagline-link" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           {profile.display_name || username}'s Portfolio{tagline ? ': ' + tagline : ''}
         </Link>
       </div>

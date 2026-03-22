@@ -37,14 +37,14 @@ export default function PhotoGallery({ images, onAdd, onRemove, onUpdateCaption 
     }
   }, []);
 
-  const dragState = useRef({ active: false, startX: 0, scrollLeft: 0, moved: false, prevX: 0, velocity: 0, ts: 0, raf: 0 });
+  const dragState = useRef({ active: false, startX: 0, scrollLeft: 0, moved: false, samples: [], raf: 0 });
 
   const handleMouseDown = useCallback((e) => {
     if (!scrollRef.current) return;
     const tag = e.target.tagName.toLowerCase();
     if (tag === 'button' || tag === 'input' || e.target.closest('button') || e.target.closest('input') || e.target.closest('.gallery-caption-editor')) return;
     cancelAnimationFrame(dragState.current.raf);
-    dragState.current = { active: true, startX: e.clientX, scrollLeft: scrollRef.current.scrollLeft, moved: false, prevX: e.clientX, velocity: 0, ts: Date.now(), raf: 0 };
+    dragState.current = { active: true, startX: e.clientX, scrollLeft: scrollRef.current.scrollLeft, moved: false, samples: [{ x: e.clientX, t: Date.now() }], raf: 0 };
     scrollRef.current.style.cursor = 'grabbing';
   }, []);
 
@@ -52,14 +52,11 @@ export default function PhotoGallery({ images, onAdd, onRemove, onUpdateCaption 
     const ds = dragState.current;
     if (!ds.active || !scrollRef.current) return;
     e.preventDefault();
-    const now = Date.now();
-    const dt = Math.max(now - ds.ts, 1);
     const dx = e.clientX - ds.startX;
-    ds.velocity = (e.clientX - ds.prevX) / dt;
-    ds.prevX = e.clientX;
-    ds.ts = now;
     if (Math.abs(dx) > 3) ds.moved = true;
     scrollRef.current.scrollLeft = ds.scrollLeft - dx;
+    ds.samples.push({ x: e.clientX, t: Date.now() });
+    if (ds.samples.length > 6) ds.samples.shift();
   }, []);
 
   const handleMouseUp = useCallback(() => {
@@ -67,14 +64,23 @@ export default function PhotoGallery({ images, onAdd, onRemove, onUpdateCaption 
     ds.active = false;
     if (!scrollRef.current) return;
     scrollRef.current.style.cursor = 'grab';
-    let v = -ds.velocity * 16;
+    const now = Date.now();
+    const recent = ds.samples.filter(s => now - s.t < 100);
+    let velocity = 0;
+    if (recent.length >= 2) {
+      const first = recent[0];
+      const last = recent[recent.length - 1];
+      const dt = last.t - first.t;
+      if (dt > 0) velocity = -(last.x - first.x) / dt * 18;
+    }
+    let v = velocity;
     const coast = () => {
-      if (Math.abs(v) < 0.3 || !scrollRef.current) return;
+      if (Math.abs(v) < 0.5 || !scrollRef.current) return;
       scrollRef.current.scrollLeft += v;
-      v *= 0.94;
+      v *= 0.95;
       ds.raf = requestAnimationFrame(coast);
     };
-    ds.raf = requestAnimationFrame(coast);
+    if (Math.abs(v) > 0.5) ds.raf = requestAnimationFrame(coast);
   }, []);
 
   useEffect(() => {
