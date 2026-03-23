@@ -3537,12 +3537,15 @@ body {
   gap: 20px;
   align-items: start;
 }
+.pp-left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 .pp-right-col {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  grid-column: 2;
-  grid-row: 1 / -1;
 }
 .pp-card {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.1));
@@ -3910,9 +3913,6 @@ body {
 }
 
 /* ---- Summit Card Section ---- */
-.pp-summit-card {
-  grid-column: 1;
-}
 .pp-summit-fee {
   font-size: 0.82rem;
   color: #9dd1ff;
@@ -3982,6 +3982,93 @@ body {
 .pp-summit-check svg {
   color: #6fcf97;
   flex-shrink: 0;
+}
+
+/* ---- Oneworld Status Card ---- */
+.pp-oneworld-intro {
+  font-size: 0.78rem;
+  color: #b8cee3;
+  margin: -8px 0 16px;
+  line-height: 1.5;
+}
+.pp-ow-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.pp-ow-tier {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.pp-ow-header {
+  padding: 8px 12px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+.pp-ow-ruby { background: rgba(200, 60, 60, 0.25); color: #f4a0a0; }
+.pp-ow-sapphire { background: rgba(60, 100, 200, 0.25); color: #a0c4f4; }
+.pp-ow-emerald { background: rgba(40, 160, 80, 0.25); color: #8edca8; }
+.pp-ow-atmos {
+  padding: 8px 12px 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #d6e7f8;
+  text-align: center;
+}
+.pp-ow-perks {
+  list-style: none;
+  padding: 4px 12px 12px;
+  margin: 0;
+}
+.pp-ow-perks li {
+  font-size: 0.72rem;
+  color: #c0d4e8;
+  padding: 2px 0 2px 12px;
+  position: relative;
+  line-height: 1.45;
+}
+.pp-ow-perks li::before {
+  content: '·';
+  position: absolute;
+  left: 0;
+  font-weight: 700;
+  color: #8eb8e8;
+}
+
+/* ---- Links Card ---- */
+.pp-links-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pp-link-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius);
+  color: #9dd1ff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.pp-link-item:hover {
+  background: rgba(157, 209, 255, 0.12);
+  border-color: rgba(157, 209, 255, 0.3);
+  color: #c4e5ff;
+}
+.pp-link-item svg {
+  flex-shrink: 0;
+  opacity: 0.6;
 }
 
 /* ---- Milestones Timeline ---- */
@@ -4155,4 +4242,5 @@ body {
   .pp-breakdown-row span:last-child { margin-top: 2px; }
   .pp-summit-grid { grid-template-columns: 1fr; }
   .pp-summit-card { padding: 16px; }
+  .pp-ow-grid { grid-template-columns: 1fr; }
 }

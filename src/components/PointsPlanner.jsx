@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { FiChevronDown, FiArrowRight, FiNavigation, FiStar, FiCheck, FiGift, FiAward, FiX, FiRotateCcw } from 'react-icons/fi';
+import { FiChevronDown, FiArrowRight, FiNavigation, FiStar, FiCheck, FiGift, FiAward, FiX, FiRotateCcw, FiExternalLink } from 'react-icons/fi';
 import airports, { haversineDistance } from '../data/airports.js';
 
 const OPERATING_AIRLINES = [
@@ -474,6 +474,7 @@ export default function PointsPlanner() {
         </div>
 
         <div className="pp-grid">
+          <div className="pp-left-col">
           <div className="pp-card pp-form-card">
             <h2 className="pp-card-title">Route & Fare</h2>
 
@@ -629,6 +630,62 @@ export default function PointsPlanner() {
                 <span className="pp-summit-check"><FiCheck size={12} /> Travel delay protection</span>
               </div>
             </div>
+          </div>
+
+          <div className="pp-card pp-oneworld-card">
+            <h2 className="pp-card-title">Oneworld Status Mapping</h2>
+            <p className="pp-oneworld-intro">Your Atmos Rewards status translates to oneworld alliance tier benefits when traveling on any oneworld partner airline.</p>
+            <div className="pp-ow-grid">
+              <div className="pp-ow-tier">
+                <div className="pp-ow-header pp-ow-ruby">oneworld Ruby</div>
+                <div className="pp-ow-atmos">Atmos Silver</div>
+                <ul className="pp-ow-perks">
+                  <li>Priority check-in</li>
+                  <li>Priority boarding</li>
+                  <li>Extra baggage allowance</li>
+                </ul>
+              </div>
+              <div className="pp-ow-tier">
+                <div className="pp-ow-header pp-ow-sapphire">oneworld Sapphire</div>
+                <div className="pp-ow-atmos">Atmos Gold</div>
+                <ul className="pp-ow-perks">
+                  <li>All Ruby benefits</li>
+                  <li>Business class lounge access</li>
+                  <li>Priority baggage handling</li>
+                  <li>Priority waitlisting</li>
+                </ul>
+              </div>
+              <div className="pp-ow-tier">
+                <div className="pp-ow-header pp-ow-emerald">oneworld Emerald</div>
+                <div className="pp-ow-atmos">Atmos Platinum & Titanium</div>
+                <ul className="pp-ow-perks">
+                  <li>All Sapphire benefits</li>
+                  <li>First class lounge access</li>
+                  <li>Fast track security lanes</li>
+                  <li>Priority boarding & seating</li>
+                  <li>Extra baggage allowance</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="pp-card pp-links-card">
+            <h2 className="pp-card-title">Atmos Rewards Resources</h2>
+            <div className="pp-links-list">
+              <a href="https://www.alaskaair.com/atmosrewards/content/credit-cards" target="_blank" rel="noopener noreferrer" className="pp-link-item">
+                <span>Atmos Rewards Credit Cards</span>
+                <FiExternalLink size={14} />
+              </a>
+              <a href="https://www.alaskaair.com/atmosrewards/content/benefits" target="_blank" rel="noopener noreferrer" className="pp-link-item">
+                <span>Atmos Status Tiers & Benefits</span>
+                <FiExternalLink size={14} />
+              </a>
+              <a href="https://www.alaskaair.com/atmosrewards/content/earn-points/flights" target="_blank" rel="noopener noreferrer" className="pp-link-item">
+                <span>Earning Points on Flights</span>
+                <FiExternalLink size={14} />
+              </a>
+            </div>
+          </div>
           </div>
 
           <div className="pp-right-col">
