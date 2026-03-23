@@ -655,7 +655,6 @@ export default function PointsPlanner() {
             <div className="pp-ow-grid">
               <div className="pp-ow-tier">
                 <div className="pp-ow-header pp-ow-ruby">oneworld Ruby</div>
-                <div className="pp-ow-atmos">Atmos Silver · 20,000 SP</div>
                 <ul className="pp-ow-perks">
                   <li>Business Class priority check-in</li>
                   <li>Preferred or pre-reserved seating</li>
@@ -664,7 +663,6 @@ export default function PointsPlanner() {
               </div>
               <div className="pp-ow-tier">
                 <div className="pp-ow-header pp-ow-sapphire">oneworld Sapphire</div>
-                <div className="pp-ow-atmos">Atmos Gold · 40,000 SP</div>
                 <ul className="pp-ow-perks">
                   <li>Business Class lounge access</li>
                   <li>Business Class priority check-in</li>
@@ -677,7 +675,6 @@ export default function PointsPlanner() {
               </div>
               <div className="pp-ow-tier">
                 <div className="pp-ow-header pp-ow-emerald">oneworld Emerald</div>
-                <div className="pp-ow-atmos">Atmos Platinum · 75,000 SP / Titanium · 100,000+ SP</div>
                 <ul className="pp-ow-perks">
                   <li>First and Business Class lounge access</li>
                   <li>First Class priority check-in</li>
