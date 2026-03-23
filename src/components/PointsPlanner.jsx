@@ -110,7 +110,7 @@ const ATMOS_MILESTONES = [
       'One complimentary Wi-Fi pass',
       'Double points with non-air partners',
       'Upgrade your next Avis/Budget rental',
-      '$10 SAF contribution',
+      '$10 Sustainable Aviation Fuel contribution',
     ],
     benefits: [],
   },
@@ -459,10 +459,7 @@ export default function PointsPlanner() {
 
   return (
     <div className="pp-page">
-      <nav className="pp-nav">
-        <img src={ATMOS_LOGO_SRC} alt="" className="pp-nav-logo" />
-        <span className="pp-nav-title">Atmos Rewards Points Planner</span>
-      </nav>
+      <nav className="pp-nav" />
 
       <div className="pp-container">
         <div className="pp-hero">
@@ -568,6 +565,57 @@ export default function PointsPlanner() {
                 <span className="pp-hint">Card earning: 3x miles on Alaska/Hawaiian portals, 1x on other portals. Status points from card spend are 1 per $2.</span>
               </div>
             )}
+
+            <div className="pp-card-section pp-summit-card">
+              <h2 className="pp-card-title pp-section-gap">Atmos Rewards Summit Visa Infinite Card</h2>
+              <p className="pp-summit-fee">$395 annual fee</p>
+
+              <div className="pp-summit-grid">
+                <div className="pp-summit-group">
+                  <h3 className="pp-summit-heading">Earning</h3>
+                  <ul className="pp-summit-list">
+                    <li><strong>3x</strong> per $1 on eligible dining, foreign transactions, Alaska Airlines & Hawaiian Airlines purchases</li>
+                    <li><strong>1x</strong> per $1 on all other purchases</li>
+                    <li><strong>1 status point</strong> per $2 spent, uncapped</li>
+                  </ul>
+                </div>
+
+                <div className="pp-summit-group">
+                  <h3 className="pp-summit-heading">Companion Awards</h3>
+                  <ul className="pp-summit-list">
+                    <li>Annual <strong>25K Point Global Companion Award</strong> on card anniversary — valid on Alaska Airlines, Hawaiian Airlines & partners</li>
+                    <li>Earn a <strong>100K Point Global Companion Award</strong> after spending $60,000+ in a card anniversary year</li>
+                  </ul>
+                </div>
+
+                <div className="pp-summit-group">
+                  <h3 className="pp-summit-heading">Lounge & Travel</h3>
+                  <ul className="pp-summit-list">
+                    <li><strong>8 Alaska Lounge day passes</strong> annually (two per quarter)</li>
+                    <li><strong>8 Wi-Fi passes</strong> annually (two per quarter)</li>
+                    <li>Up to <strong>$120 Airport Security Statement Credit</strong> every four years (TSA PreCheck or Global Entry)</li>
+                    <li>No foreign transaction fees</li>
+                  </ul>
+                </div>
+
+                <div className="pp-summit-group">
+                  <h3 className="pp-summit-heading">Flight Benefits</h3>
+                  <ul className="pp-summit-list">
+                    <li>Free checked baggage for you and up to <strong>six guests</strong> on your reservation when paid with card</li>
+                    <li>Preferred boarding for you and up to <strong>six guests</strong> on your reservation when paid with card</li>
+                    <li>Same-day confirmed change fee waiver (excludes Saver)</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="pp-summit-extras">
+                <span className="pp-summit-check"><FiCheck size={12} /> Transfer points to partners</span>
+                <span className="pp-summit-check"><FiCheck size={12} /> Free points sharing</span>
+                <span className="pp-summit-check"><FiCheck size={12} /> 10,000 status points on card anniversary</span>
+                <span className="pp-summit-check"><FiCheck size={12} /> Travel delay protection</span>
+                <span className="pp-summit-check"><FiCheck size={12} /> Partner award fee waiver</span>
+              </div>
+            </div>
           </div>
 
           <div className="pp-right-col">
@@ -619,7 +667,7 @@ export default function PointsPlanner() {
             </div>
 
             <div className="pp-card pp-milestones-card">
-              <h2 className="pp-card-title"><span className="pp-brand-text">Atmos</span> Status Tiers & Milestones</h2>
+              <h2 className="pp-card-title">Atmos Status Tiers & Milestones</h2>
               <div className="pp-timeline">
                 {ATMOS_MILESTONES.map((item, idx) => (
                   <div key={idx} className={`pp-tl-item ${item.kind === 'tier' ? 'pp-tl-tier' : 'pp-tl-milestone'}`}>

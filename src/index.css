@@ -3861,6 +3861,81 @@ body {
 }
 .pp-empty p { color: #c8d9ec; font-size: 0.85rem; line-height: 1.5; max-width: 260px; }
 
+/* ---- Summit Card Section ---- */
+.pp-card-section {
+  margin-top: 20px;
+}
+.pp-summit-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px;
+}
+.pp-summit-fee {
+  font-size: 0.82rem;
+  color: #9dd1ff;
+  font-weight: 700;
+  margin: -8px 0 16px;
+}
+.pp-summit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.pp-summit-group {
+  min-width: 0;
+}
+.pp-summit-heading {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #b8d4f0;
+  margin: 0 0 8px;
+}
+.pp-summit-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.pp-summit-list li {
+  font-size: 0.76rem;
+  color: #d0e3f5;
+  line-height: 1.5;
+  padding: 3px 0 3px 14px;
+  position: relative;
+}
+.pp-summit-list li::before {
+  content: '·';
+  position: absolute;
+  left: 2px;
+  font-weight: 700;
+  color: #8eb8e8;
+}
+.pp-summit-list li strong {
+  color: #eef6ff;
+  font-weight: 700;
+}
+.pp-summit-extras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.pp-summit-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.74rem;
+  color: #b8d4f0;
+}
+.pp-summit-check svg {
+  color: #6fcf97;
+  flex-shrink: 0;
+}
+
 /* ---- Milestones Timeline ---- */
 .pp-milestones-card {
   padding-bottom: 12px;
@@ -4031,4 +4106,6 @@ body {
     text-align: left;
   }
   .pp-breakdown-row span:last-child { margin-top: 2px; }
+  .pp-summit-grid { grid-template-columns: 1fr; }
+  .pp-summit-card { padding: 16px; }
 }
