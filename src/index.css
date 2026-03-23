@@ -3991,6 +3991,31 @@ body {
   margin: -8px 0 16px;
   line-height: 1.5;
 }
+.pp-ow-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  font-size: 0.76rem;
+}
+.pp-ow-table th {
+  text-align: left;
+  padding: 8px 10px;
+  font-weight: 700;
+  color: #b8d4f0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.68rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.18);
+}
+.pp-ow-table td {
+  padding: 7px 10px;
+  color: #d0e3f5;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.pp-ow-table tbody tr:last-child td { border-bottom: none; }
+.pp-ow-ruby-text { color: #f4a0a0; font-weight: 600; }
+.pp-ow-sapphire-text { color: #a0c4f4; font-weight: 600; }
+.pp-ow-emerald-text { color: #8edca8; font-weight: 600; }
 .pp-ow-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -4217,6 +4242,13 @@ body {
   .pp-hero-heading { font-size: 1.35rem; }
   .pp-hero-sub { font-size: 0.92rem; }
   .pp-grid { grid-template-columns: 1fr; }
+  .pp-left-col, .pp-right-col { display: contents; }
+  .pp-form-card { order: 1; }
+  .pp-results-card { order: 2; }
+  .pp-summit-card { order: 3; }
+  .pp-oneworld-card { order: 4; }
+  .pp-links-card { order: 5; }
+  .pp-milestones-card { order: 6; }
   .pp-route-row { flex-direction: column; align-items: stretch; }
   .pp-route-arrow {
     width: 100%;

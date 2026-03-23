@@ -633,37 +633,60 @@ export default function PointsPlanner() {
           </div>
 
           <div className="pp-card pp-oneworld-card">
-            <h2 className="pp-card-title">Oneworld Status Mapping</h2>
-            <p className="pp-oneworld-intro">Your Atmos Rewards status translates to oneworld alliance tier benefits when traveling on any oneworld partner airline.</p>
+            <h2 className="pp-card-title">Atmos Rewards to Oneworld Mapping (Effective 2026)</h2>
+            <p className="pp-oneworld-intro">Your Atmos Rewards status translates to oneworld alliance tier benefits when flying on any oneworld member airline.</p>
+
+            <table className="pp-ow-table">
+              <thead>
+                <tr>
+                  <th>Atmos Status</th>
+                  <th>Status Points</th>
+                  <th>Oneworld Tier</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Silver</td><td>20,000</td><td className="pp-ow-ruby-text">Ruby</td></tr>
+                <tr><td>Gold</td><td>40,000</td><td className="pp-ow-sapphire-text">Sapphire</td></tr>
+                <tr><td>Platinum</td><td>75,000</td><td className="pp-ow-emerald-text">Emerald</td></tr>
+                <tr><td>Titanium</td><td>100,000+</td><td className="pp-ow-emerald-text">Emerald</td></tr>
+              </tbody>
+            </table>
+
             <div className="pp-ow-grid">
               <div className="pp-ow-tier">
                 <div className="pp-ow-header pp-ow-ruby">oneworld Ruby</div>
-                <div className="pp-ow-atmos">Atmos Silver</div>
+                <div className="pp-ow-atmos">Atmos Silver · 20,000 SP</div>
                 <ul className="pp-ow-perks">
-                  <li>Priority check-in</li>
-                  <li>Priority boarding</li>
-                  <li>Extra baggage allowance</li>
+                  <li>Business Class priority check-in</li>
+                  <li>Preferred or pre-reserved seating</li>
+                  <li>Priority on waitlists and standby</li>
                 </ul>
               </div>
               <div className="pp-ow-tier">
                 <div className="pp-ow-header pp-ow-sapphire">oneworld Sapphire</div>
-                <div className="pp-ow-atmos">Atmos Gold</div>
+                <div className="pp-ow-atmos">Atmos Gold · 40,000 SP</div>
                 <ul className="pp-ow-perks">
-                  <li>All Ruby benefits</li>
-                  <li>Business class lounge access</li>
+                  <li>Business Class lounge access</li>
+                  <li>Business Class priority check-in</li>
+                  <li>Preferred or pre-reserved seating</li>
+                  <li>Priority on waitlists and standby</li>
+                  <li>Priority boarding</li>
+                  <li>Extra free checked baggage on oneworld flights</li>
                   <li>Priority baggage handling</li>
-                  <li>Priority waitlisting</li>
                 </ul>
               </div>
               <div className="pp-ow-tier">
                 <div className="pp-ow-header pp-ow-emerald">oneworld Emerald</div>
-                <div className="pp-ow-atmos">Atmos Platinum & Titanium</div>
+                <div className="pp-ow-atmos">Atmos Platinum · 75,000 SP / Titanium · 100,000+ SP</div>
                 <ul className="pp-ow-perks">
-                  <li>All Sapphire benefits</li>
-                  <li>First class lounge access</li>
-                  <li>Fast track security lanes</li>
-                  <li>Priority boarding & seating</li>
-                  <li>Extra baggage allowance</li>
+                  <li>First and Business Class lounge access</li>
+                  <li>First Class priority check-in</li>
+                  <li>Fast Track / Priority Lane at select airports</li>
+                  <li>Priority baggage handling</li>
+                  <li>Extra free checked baggage on oneworld flights</li>
+                  <li>Priority boarding</li>
+                  <li>Preferred or pre-reserved seating</li>
+                  <li>Priority on waitlists and standby</li>
                 </ul>
               </div>
             </div>
