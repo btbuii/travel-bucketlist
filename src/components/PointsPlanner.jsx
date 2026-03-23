@@ -461,7 +461,7 @@ export default function PointsPlanner() {
     <div className="pp-page">
       <nav className="pp-nav">
         <img src={ATMOS_LOGO_SRC} alt="" className="pp-nav-logo" />
-        <span className="pp-nav-title">Points Planner</span>
+        <span className="pp-nav-title">Atmos Rewards Points Planner</span>
       </nav>
 
       <div className="pp-container">
