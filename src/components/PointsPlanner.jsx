@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { FiChevronDown, FiArrowRight, FiNavigation, FiStar, FiCheck, FiGift, FiAward } from 'react-icons/fi';
+import { FiChevronDown, FiArrowRight, FiNavigation, FiStar, FiCheck, FiGift, FiAward, FiX, FiRotateCcw } from 'react-icons/fi';
 import airports, { haversineDistance } from '../data/airports.js';
 
 const OPERATING_AIRLINES = [
@@ -482,8 +482,13 @@ export default function PointsPlanner() {
                 <AirportPicker label="Origin" required value={origin} onChange={setOrigin} excludeCodes={[stopover, destination].filter(Boolean)} />
               </div>
               <span className="pp-route-arrow" aria-hidden><FiArrowRight size={16} /></span>
-              <div className="pp-route-field">
+              <div className="pp-route-field pp-route-field--stopover">
                 <AirportPicker label="Stopover" value={stopover} onChange={setStopover} excludeCodes={[origin, destination].filter(Boolean)} />
+                {stopover && (
+                  <button type="button" className="pp-clear-stop" onClick={() => setStopover('')} aria-label="Clear stopover">
+                    <FiX size={12} />
+                  </button>
+                )}
               </div>
               <span className="pp-route-arrow" aria-hidden><FiArrowRight size={16} /></span>
               <div className="pp-route-field">
@@ -566,54 +571,62 @@ export default function PointsPlanner() {
               </div>
             )}
 
-            <div className="pp-card-section pp-summit-card">
-              <h2 className="pp-card-title pp-section-gap">Atmos Rewards Summit Visa Infinite Card</h2>
-              <p className="pp-summit-fee">$395 annual fee</p>
+            <button type="button" className="pp-reset-btn" onClick={() => { setOrigin(''); setStopover(''); setDestination(''); setTripType(''); setOperatingAirline(''); setBookedThrough(''); setFareClass(''); setStatus('none'); setHasAtmosCard(false); setHasBofA(false); setTicketPrice(''); }}>
+              <FiRotateCcw size={13} /> Reset Form
+            </button>
+          </div>
 
-              <div className="pp-summit-grid">
-                <div className="pp-summit-group">
-                  <h3 className="pp-summit-heading">Earning</h3>
-                  <ul className="pp-summit-list">
-                    <li><strong>3x</strong> per $1 on eligible dining, foreign transactions, Alaska Airlines & Hawaiian Airlines purchases</li>
-                    <li><strong>1x</strong> per $1 on all other purchases</li>
-                    <li><strong>1 status point</strong> per $2 spent, uncapped</li>
-                  </ul>
-                </div>
+          <div className="pp-card pp-summit-card">
+            <h2 className="pp-card-title">Atmos Rewards Summit Visa Infinite Card</h2>
+            <p className="pp-summit-fee">$395 annual fee</p>
 
-                <div className="pp-summit-group">
-                  <h3 className="pp-summit-heading">Companion Awards</h3>
-                  <ul className="pp-summit-list">
-                    <li>Annual <strong>25K Point Global Companion Award</strong> on card anniversary — valid on Alaska Airlines, Hawaiian Airlines & partners</li>
-                    <li>Earn a <strong>100K Point Global Companion Award</strong> after spending $60,000+ in a card anniversary year</li>
-                  </ul>
-                </div>
-
-                <div className="pp-summit-group">
-                  <h3 className="pp-summit-heading">Lounge & Travel</h3>
-                  <ul className="pp-summit-list">
-                    <li><strong>8 Alaska Lounge day passes</strong> annually (two per quarter)</li>
-                    <li><strong>8 Wi-Fi passes</strong> annually (two per quarter)</li>
-                    <li>Up to <strong>$120 Airport Security Statement Credit</strong> every four years (TSA PreCheck or Global Entry)</li>
-                    <li>No foreign transaction fees</li>
-                  </ul>
-                </div>
-
-                <div className="pp-summit-group">
-                  <h3 className="pp-summit-heading">Flight Benefits</h3>
-                  <ul className="pp-summit-list">
-                    <li>Free checked baggage for you and up to <strong>six guests</strong> on your reservation when paid with card</li>
-                    <li>Preferred boarding for you and up to <strong>six guests</strong> on your reservation when paid with card</li>
-                    <li>Same-day confirmed change fee waiver (excludes Saver)</li>
-                  </ul>
-                </div>
+            <div className="pp-summit-grid">
+              <div className="pp-summit-group">
+                <h3 className="pp-summit-heading">Earning</h3>
+                <ul className="pp-summit-list">
+                  <li><strong>3x</strong> per $1 on eligible dining, foreign transactions, Alaska Airlines & Hawaiian Airlines purchases</li>
+                  <li><strong>1x</strong> per $1 on all other purchases</li>
+                  <li><strong>1 status point</strong> per $2 spent, uncapped</li>
+                </ul>
               </div>
 
-              <div className="pp-summit-extras">
+              <div className="pp-summit-group">
+                <h3 className="pp-summit-heading">Companion Awards</h3>
+                <ul className="pp-summit-list">
+                  <li>Annual <strong>25K Point Global Companion Award</strong> on card anniversary — valid on Alaska Airlines, Hawaiian Airlines & partners</li>
+                  <li>Earn a <strong>100K Point Global Companion Award</strong> after spending $60,000+ in a card anniversary year</li>
+                </ul>
+              </div>
+
+              <div className="pp-summit-group">
+                <h3 className="pp-summit-heading">Lounge & Travel</h3>
+                <ul className="pp-summit-list">
+                  <li><strong>8 Alaska Lounge day passes</strong> annually (two per quarter)</li>
+                  <li><strong>8 Wi-Fi passes</strong> annually (two per quarter)</li>
+                  <li>Up to <strong>$120 Airport Security Statement Credit</strong> every four years (TSA PreCheck or Global Entry)</li>
+                  <li>No foreign transaction fees</li>
+                </ul>
+              </div>
+
+              <div className="pp-summit-group">
+                <h3 className="pp-summit-heading">Flight Benefits</h3>
+                <ul className="pp-summit-list">
+                  <li>Free checked baggage for you and up to <strong>six guests</strong> on your reservation when paid with card</li>
+                  <li>Preferred boarding for you and up to <strong>six guests</strong> on your reservation when paid with card</li>
+                  <li>Same-day confirmed change fee waiver (excludes Saver)</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="pp-summit-extras">
+              <div className="pp-summit-extras-col">
                 <span className="pp-summit-check"><FiCheck size={12} /> Transfer points to partners</span>
-                <span className="pp-summit-check"><FiCheck size={12} /> Free points sharing</span>
                 <span className="pp-summit-check"><FiCheck size={12} /> 10,000 status points on card anniversary</span>
-                <span className="pp-summit-check"><FiCheck size={12} /> Travel delay protection</span>
                 <span className="pp-summit-check"><FiCheck size={12} /> Partner award fee waiver</span>
+              </div>
+              <div className="pp-summit-extras-col">
+                <span className="pp-summit-check"><FiCheck size={12} /> Free points sharing</span>
+                <span className="pp-summit-check"><FiCheck size={12} /> Travel delay protection</span>
               </div>
             </div>
           </div>

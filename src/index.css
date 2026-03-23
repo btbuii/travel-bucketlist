@@ -3461,7 +3461,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  padding: 12px 28px;
+  padding: 24px 28px;
   background: #000;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   position: sticky;
@@ -3541,6 +3541,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  grid-column: 2;
+  grid-row: 1 / -1;
 }
 .pp-card {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.1));
@@ -3572,6 +3574,30 @@ body {
   flex: 1;
   min-width: 0;
   position: relative;
+}
+.pp-route-field--stopover {
+  position: relative;
+}
+.pp-clear-stop {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ff8f8f;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.pp-clear-stop:hover {
+  background: rgba(220, 38, 38, 0.3);
+  color: #fff;
 }
 .pp-route-arrow {
   display: flex;
@@ -3861,21 +3887,37 @@ body {
 }
 .pp-empty p { color: #c8d9ec; font-size: 0.85rem; line-height: 1.5; max-width: 260px; }
 
-/* ---- Summit Card Section ---- */
-.pp-card-section {
-  margin-top: 20px;
+/* ---- Reset Button ---- */
+.pp-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius);
+  color: #a0b8d0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
+.pp-reset-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #eef6ff;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ---- Summit Card Section ---- */
 .pp-summit-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: var(--radius-lg);
-  padding: 20px 22px;
+  grid-column: 1;
 }
 .pp-summit-fee {
   font-size: 0.82rem;
   color: #9dd1ff;
   font-weight: 700;
-  margin: -8px 0 16px;
+  margin: -10px 0 16px;
 }
 .pp-summit-grid {
   display: grid;
@@ -3919,10 +3961,16 @@ body {
 }
 .pp-summit-extras {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px 16px;
+  gap: 24px;
   padding-top: 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.pp-summit-extras-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
 }
 .pp-summit-check {
   display: inline-flex;
@@ -4074,8 +4122,7 @@ body {
 
 /* ---- Responsive ---- */
 @media (max-width: 768px) {
-  .pp-nav { padding: 10px 16px; }
-  .pp-nav-logo { height: 26px; }
+  .pp-nav { padding: 18px 16px; }
   .pp-container { padding: 20px 14px 48px; }
   .pp-hero { margin-bottom: 20px; }
   .pp-hero-brand { gap: 12px; }
